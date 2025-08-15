@@ -6,13 +6,12 @@
 import pandas as pd
 import numpy as np
 from sklearn.datasets import load_breast_cancer
-from sklearn.preprocessing import StandardScaler
+import warnings
 
 print("Creating data_refined.csv from Wisconsin Breast Cancer dataset...")
 
-# Option 1: Load from sklearn (built-in dataset)
+# Load the built-in breast cancer dataset
 try:
-    # Load the built-in breast cancer dataset
     data = load_breast_cancer()
     
     # Create DataFrame
@@ -52,14 +51,11 @@ except Exception as e:
     target = np.random.choice(['M', 'B'], n_samples, p=[0.37, 0.63])
     
     for i, feature in enumerate(feature_names):
-        # Create features with different correlations to target
         base_value = np.random.normal(0, 1, n_samples)
         if 'mean' in feature or 'worst' in feature:
-            # Higher correlation for mean and worst features
             target_effect = np.where(target == 'M', 1.5, -1.5) + np.random.normal(0, 0.5, n_samples)
             data[feature] = base_value + target_effect * (0.3 + np.random.random() * 0.4)
         else:
-            # Lower correlation for error features
             data[feature] = base_value + np.where(target == 'M', 0.2, -0.2)
     
     df = pd.DataFrame(data)

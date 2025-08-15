@@ -10,16 +10,20 @@ print("="*80)
 
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler, LabelEncoder
-from sklearn.metrics import accuracy_score, confusion_matrix, classification_report
+from sklearn.metrics import accuracy_score, confusion_matrix
 from sklearn.feature_selection import SelectKBest, f_classif, RFE
-import matplotlib.pyplot as plt
-import seaborn as sns
 import warnings
+import sys
+import codecs
+
+# Fix UnicodeEncodeError by setting stdout encoding
+sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer)
+
 warnings.filterwarnings('ignore')
 
 print("=== Breast Cancer Classification Project ===")
@@ -45,7 +49,7 @@ try:
     else:
         # Find likely target column
         possible_targets = [col for col in df.columns if any(keyword in col.lower() 
-                          for keyword in ['diagnos', 'target', 'label', 'class'])]
+                                     for keyword in ['diagnos', 'target', 'label', 'class'])]
         if possible_targets:
             target_col = possible_targets[0]
         else:
@@ -82,7 +86,6 @@ else:
 # Calculate correlation with target
 print("\nCalculating correlation with target...")
 
-# For correlation calculation, we need numerical target
 correlations = []
 for column in X.columns:
     corr = np.corrcoef(X[column], y_encoded)[0, 1]
@@ -98,7 +101,7 @@ print("\nTop 15 features by correlation with target:")
 print(corr_df.head(15))
 
 # Choose features with correlation above threshold
-correlation_threshold = 0.3  # You can adjust this threshold
+correlation_threshold = 0.3
 important_features_corr = corr_df[corr_df['Correlation'] > correlation_threshold]['Feature'].tolist()
 
 print(f"\nFeatures with correlation > {correlation_threshold}:")
@@ -221,7 +224,6 @@ print("="*50)
 # Train on reduced feature set
 for clf_name, clf in classifiers.items():
     if clf_name == 'KNN':
-        # Use the same optimal k found earlier
         clf = KNeighborsClassifier(n_neighbors=optimal_k)
     elif clf_name == 'Random Forest':
         clf = RandomForestClassifier(random_state=42)
